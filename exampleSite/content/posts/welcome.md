@@ -1,17 +1,17 @@
 +++
 author = "Your Name"
-title = "Welcome to the Coreydaley-Dev Theme"
+title = "Welcome to the coreydaley-dev Theme"
 date = "2026-02-14T14:00:00-05:00"
 draft = false
-description = "An introduction to the Coreydaley-Dev Hugo theme - a playful, eye-catching theme designed for technical blogs. Learn about the features and get started with your own blog."
-summary = "Welcome to the Coreydaley-Dev Hugo theme! This playful, eye-catching theme is designed specifically for technical blogs about software engineering and AI development. With its distinctive cartoony design, vibrant colors, and smooth animations, your blog will stand out from the crowd. Whether you're sharing tutorials, documenting your projects, or writing about the latest in tech, this theme provides a fun and professional platform. Ready to make your blog unique?"
+description = "An introduction to the coreydaley-dev Hugo theme - a playful, eye-catching theme designed for technical blogs. Learn about the features and get started with your own blog."
+summary = "Welcome to the coreydaley-dev Hugo theme! This playful, eye-catching theme is designed specifically for technical blogs about software engineering and AI development. With its distinctive cartoony design, vibrant colors, and smooth animations, your blog will stand out from the crowd. Whether you're sharing tutorials, documenting your projects, or writing about the latest in tech, this theme provides a fun and professional platform. Ready to make your blog unique?"
 tags = ["hugo", "themes", "web-development"]
 categories = ["Getting Started"]
 +++
 
-# Welcome to Coreydaley-Dev Theme!
+# Welcome to coreydaley-dev Theme!
 
-This is an example blog post demonstrating the **Coreydaley-Dev Hugo theme**. This theme features:
+This is an example blog post demonstrating the **coreydaley-dev Hugo theme**. This theme features:
 
 ## Key Features
 
@@ -28,7 +28,7 @@ Here's what code looks like:
 ```javascript
 function greet(name) {
   console.log(`Hello, ${name}!`);
-  return `Welcome to the Coreydaley-Dev theme`;
+  return `Welcome to the coreydaley-dev theme`;
 }
 
 greet("Developer");
@@ -44,4 +44,4 @@ The theme includes:
 4. Share buttons for social media
 5. Mobile-friendly navigation
 
-*Ready to start blogging with this awesome theme?*
+_Ready to start blogging with this awesome theme?_
