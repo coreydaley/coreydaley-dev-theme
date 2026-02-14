@@ -1,0 +1,133 @@
+{{/* Created by: AI Agent | Date: 2026-02-06T22:56:44-05:00 | Last Modified By: Claude Code (Claude Sonnet 4.5) | Last Modified: 2026-02-14T15:00:00-05:00 */}}
+{{ define "main" }}
+  <article class="single-post">
+    <header class="post-header">
+      <div class="post-header-content">
+        <h1 data-pagefind-meta="title:{{ .Title }}" class="post-title-single">
+          {{ .Title }}
+        </h1>
+        <span data-pagefind-meta="description:{{ .Description }}" class="hidden"
+          >{{ .Description }}</span
+        >
+      </div>
+    </header>
+
+    <div data-pagefind-body class="post-content">
+      <div class="reading-time">
+        Reading time:
+        {{ .ReadingTime }}
+        minute{{ if (ne .ReadingTime 1) }}s{{ end }}
+      </div>
+
+      {{ if eq .Section "posts" }}
+        {{ .Content }}
+        <div
+          data-pagefind-meta="date:{{ .Date.Format "2006-01-02" }}"
+          class="post-author-date"
+        >
+          Authored by {{ .Params.author | default .Site.Title }} on
+          <time datetime="{{ .Date.Format "2006-01-02" }}"
+            >{{ .Date.Format "January 2, 2006" }}</time
+          >
+        </div>
+        <div class="post-taxonomy single-post-taxonomy">
+          {{ if .Params.categories }}
+            <div class="post-categories">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                class="taxonomy-icon"
+              >
+                <path
+                  d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+                />
+              </svg>
+              <span
+                data-pagefind-meta="categories:{{ delimit (sort .Params.categories) ", " }}"
+              >
+                {{ range $index, $category := sort .Params.categories }}
+                  {{ if $index }},{{ end }}
+                  <a
+                    href="{{ "/categories/" | relURL }}{{ $category | urlize }}"
+                    class="taxonomy-link"
+                    >{{ $category }}</a
+                  >
+                {{ end }}
+              </span>
+            </div>
+          {{ end }}
+
+          {{ if .Params.tags }}
+            <div class="post-tags-list">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                class="taxonomy-icon"
+              >
+                <path
+                  d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"
+                />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg>
+              <span
+                data-pagefind-meta="tags:{{ delimit (sort .Params.tags) ", " }}"
+              >
+                {{ range $index, $tag := sort .Params.tags }}
+                  {{ if $index }},{{ end }}
+                  <a
+                    href="{{ "/tags/" | relURL }}{{ $tag | urlize }}"
+                    class="taxonomy-link"
+                    >{{ $tag }}</a
+                  >
+                {{ end }}
+              </span>
+            </div>
+          {{ end }}
+        </div>
+      {{ end }}
+      {{ partial "share-buttons.html" . }}
+    </div>
+
+    <footer class="post-footer">
+      <div class="post-navigation">
+        {{ with .PrevInSection }}
+          <a href="{{ .RelPermalink }}" class="nav-post prev-post">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            <div class="nav-post-content">
+              <span class="nav-label">Previous</span>
+              <span class="nav-title">{{ .Title }}</span>
+            </div>
+          </a>
+        {{ end }}
+
+        {{ with .NextInSection }}
+          <a href="{{ .RelPermalink }}" class="nav-post next-post">
+            <div class="nav-post-content">
+              <span class="nav-label">Next</span>
+              <span class="nav-title">{{ .Title }}</span>
+            </div>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+        {{ end }}
+      </div>
+    </footer>
+  </article>
+{{ end }}

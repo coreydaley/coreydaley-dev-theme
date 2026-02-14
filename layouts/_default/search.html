@@ -1,0 +1,203 @@
+{{/* Created by: AI Agent | Date: 2026-02-06T22:56:44-05:00 | Last Modified By: Claude Code (Claude Sonnet 4.5) | Last Modified: 2026-02-14T15:45:00-05:00 */}}
+{{ define "main" }}
+  <article class="posts-list">
+    <div class="search-page">
+      <div class="search-container">
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="Search..."
+          autofocus
+        />
+      </div>
+
+      <div id="search-results"></div>
+    </div>
+  </article>
+
+  <!-- Import core Pagefind API (not the UI) -->
+  <script type="module">
+    // Import pagefind as a module
+    const pagefind = await import("/pagefind/pagefind.js");
+
+    // Perform search using Pagefind API and return JSON results
+    async function performSearch(query) {
+      const resultsContainer = document.getElementById("search-results");
+
+      if (!query || query.trim().length === 0) {
+        resultsContainer.innerHTML =
+          '<p class="search-message">Enter a search query to find results.</p>';
+        return [];
+      }
+
+      resultsContainer.innerHTML = '<p class="search-message">Searching...</p>';
+
+      try {
+        // Perform search using Pagefind API
+        const search = await pagefind.search(query);
+
+        console.log(
+          `Found ${search.results.length} results for query: "${query}"`,
+        );
+
+        // Get full data for all results
+        const fullResults = await Promise.all(
+          search.results.map((result) => result.data()),
+        );
+
+        // Process results into clean JSON format
+        const jsonResults = fullResults.map((result) => ({
+          url: result.url,
+          title: result.meta.title || "Untitled",
+          description: result.meta.description || "",
+          excerpt: result.excerpt,
+          tags: result.meta.tags ? result.meta.tags.split(", ") : [],
+          categories: result.meta.categories
+            ? result.meta.categories.split(", ")
+            : [],
+          date: result.meta.date || "",
+          image: result.meta.image || "",
+          wordCount: result.word_count,
+        }));
+
+        // Log results as JSON to console
+
+        // Display results on page
+        displayResults(jsonResults);
+
+        return jsonResults;
+      } catch (error) {
+        console.error("Search failed:", error);
+        resultsContainer.innerHTML = `<p class="search-message error">Search error: ${error.message}</p>`;
+        return [];
+      }
+    }
+
+    // Display results in the UI
+    function displayResults(results) {
+      const resultsContainer = document.getElementById("search-results");
+      resultsContainer.innerHTML = "";
+      resultsContainer.className = "posts-list-simple";
+
+      if (results.length === 0) {
+        resultsContainer.innerHTML =
+          '<p class="search-message">No results found.</p>';
+        return;
+      }
+
+      results.forEach((result, index) => {
+        const article = document.createElement("article");
+        article.className = result.image
+          ? "post-item post-item-with-image"
+          : "post-item";
+
+        // Build categories HTML
+        const categoriesHtml =
+          result.categories && result.categories.length > 0
+            ? `<div class="post-categories">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="taxonomy-icon">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              </svg>
+              ${result.categories
+                .map(
+                  (category, i) =>
+                    `${i > 0 ? ", " : ""}<a href="/categories/${category.toLowerCase().replace(/\s+/g, "-")}" class="taxonomy-link">${category}</a>`,
+                )
+                .join("")}
+            </div>`
+            : "";
+
+        // Build tags HTML
+        const tagsHtml =
+          result.tags && result.tags.length > 0
+            ? `<div class="post-tags-list">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="taxonomy-icon">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+              ${result.tags
+                .map(
+                  (tag, i) =>
+                    `${i > 0 ? ", " : ""}<a href="/tags/${tag.toLowerCase().replace(/\s+/g, "-")}" class="taxonomy-link">${tag}</a>`,
+                )
+                .join("")}
+            </div>`
+            : "";
+
+        const taxonomyHtml =
+          categoriesHtml || tagsHtml
+            ? `<div class="post-taxonomy">${categoriesHtml}${tagsHtml}</div>`
+            : "";
+
+        // Build image HTML
+        const imageHtml = result.image
+          ? `<div class="post-image">
+              <a href="${result.url}">
+                <img src="${result.image}" alt="${result.title}" loading="lazy" />
+              </a>
+            </div>`
+          : "";
+
+        article.innerHTML = `
+          <div class="post-content">
+            <h2 class="post-title">
+              <a href="${result.url}">${result.title}</a>
+            </h2>
+            ${imageHtml}
+            ${result.description ? `<p class="post-excerpt">${result.description}</p>` : ""}
+            ${taxonomyHtml}
+            <a href="${result.url}" class="read-more">Read more →</a>
+          </div>
+        `;
+
+        resultsContainer.appendChild(article);
+
+        // Add separator if not the last item
+        if (index < results.length - 1) {
+          const separator = document.createElement("hr");
+          separator.className = "post-separator";
+          resultsContainer.appendChild(separator);
+        }
+      });
+    }
+
+    // Debounce search to avoid too many requests
+    let searchTimeout;
+    function debouncedSearch(query) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        performSearch(query);
+      }, 300);
+    }
+
+    // Initialize immediately (module scripts are already deferred)
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get("q") || "";
+    const searchInput = document.getElementById("search-input");
+
+    // Set input value from URL parameter
+    if (searchQuery) {
+      searchInput.value = searchQuery;
+      // Perform initial search if query parameter exists
+
+      await performSearch(searchQuery);
+    }
+
+    // Hook up live search
+    searchInput.addEventListener("input", (e) => {
+      const query = e.target.value;
+      debouncedSearch(query);
+
+      // Update URL with query parameter
+      const newUrl = new URL(window.location);
+      if (query) {
+        newUrl.searchParams.set("q", query);
+      } else {
+        newUrl.searchParams.delete("q");
+      }
+      window.history.replaceState({}, "", newUrl);
+    });
+  </script>
+{{ end }}
